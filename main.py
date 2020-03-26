@@ -347,24 +347,20 @@ if __name__ == "__main__":
     task1 = cotask.Task (motor_task_1, name = 'right_motor', priority = 1, 
                          period = 20, profile = True, trace = False)
     
-    task3 = cotask.Task (motion_control, name = 'motion', priority = 2, 
+    task2 = cotask.Task (motion_control, name = 'motion', priority = 2,
                         period = 21, profile = True, trace = False)
     
-    task4 = cotask.Task (ir_sensor_task, name = 'ir_sensor', priority = 2, 
+    task3 = cotask.Task (ir_sensor_task, name = 'ir_sensor', priority = 2,
                         period = 25, profile = True, trace = False)
     
-    task5 = cotask.Task (perception, name = 'perception', priority = 1, 
+    task4 = cotask.Task (perception, name = 'perception', priority = 1,
                         period = 20, profile = True, trace = False)
 
     
-    #task6 = cotask.Task (MasterMind, name = 'mastermind', priority = 2, 
-                        #period = 40, profile = True, trace = False)
-    
-    cotask.task_list.append (task4)
     cotask.task_list.append (task1)
+    cotask.task_list.append (task2)
     cotask.task_list.append (task3)
-    cotask.task_list.append (task5)
-    #cotask.task_list.append (task6)
+    cotask.task_list.append (task4)
 
     gc.collect ()
 
