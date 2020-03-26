@@ -5,7 +5,7 @@ Spyder Editor
 This is a temporary script file.
 """
 
-''' @file main.py
+''' @file encoder_darvish_goodman.py
 There must be a docstring at the beginning of a Python
 source file with an @file [filename] tag in it! '''
 

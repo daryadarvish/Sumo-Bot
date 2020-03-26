@@ -2,7 +2,7 @@
 """
 Created on Fri Feb 28 11:26:44 2020
 
-@author: melab15
+@author: Darya Darvish
 """
 
 import pyb
