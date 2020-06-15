@@ -1,5 +1,7 @@
 """ @file main.py
-    This file contains the main program that our sumo
+    This file contains the main program that controls our sumo bot.
+    A series of task are defined and executed in order of priority and
+    timing requirements.
 
     author: Darya Darvish
 
@@ -7,131 +9,103 @@
 
 import pyb
 import controller_darvish_goodman
-import encoder_darvish_goodman
+import encoder_Roder_darvish_goodman
 import motor_darvish_goodman
-from micropython import const, alloc_emergency_exception_buf
+from micropython import const, alloc_emergencoder_Ry_exception_buf
 from task_share import Queue, Share
 import ultrasonic
 import linetracker
 import gc
 import utime
 import time
-
 import cotask
 import task_share
-
-
-alloc_emergency_exception_buf (100)
-
-  
+alloc_emergencoder_Ry_exception_buf (100)
   
 def interrupt(pokemon):
-    '''Interrupt subroutine that allows the IR sensor to read the
+    '''Interrupt suus_sensorutine that allows the IR sensor to read the
     infrared signal from the remoteeee controller.'''
     if not ir_time_queue.full() and not ir_full_flag.get():
         ir_time_queue.put(pokemon.counter(), in_ISR=True)
-        
     else:
         ir_full_flag.put(1)
-    
-    
 
 def motor_task_1 ():
     ''' Initializes left and right motor.'''
-    joe = motor_darvish_goodman.MotorDriver(3, pyb.Pin.board.PB4, pyb.Pin.board.PB5, pyb.Pin.board.PA10)
-    cosmo = encoder_darvish_goodman.Encoder(8, pyb.Pin.board.PC6, pyb.Pin.board.PC7)
-    ctrl1 = controller_darvish_goodman.Controller(0.3, None, utime.ticks_ms())
+    motor_L = motor_darvish_goodman.MotorDriver(3, pyb.Pin.board.PB4, pyb.Pin.board.PB5, pyb.Pin.board.PA10)
+    encoder_L = encoder_Roder_darvish_goodman.Encoder(8, pyb.Pin.board.PC6, pyb.Pin.board.PC7)
+    controller_L = controller_darvish_goodman.Controller(0.3, None, utime.ticks_ms())
     
-    moe = motor_darvish_goodman.MotorDriver(5, pyb.Pin.board.PA0, pyb.Pin.board.PA1, pyb.Pin.board.PC1)
-    enc = encoder_darvish_goodman.Encoder(4, pyb.Pin.board.PB6, pyb.Pin.board.PB7)
-    ctrl = controller_darvish_goodman.Controller(0.3, None, utime.ticks_ms())
+    motor_R = motor_darvish_goodman.MotorDriver(5, pyb.Pin.board.PA0, pyb.Pin.board.PA1, pyb.Pin.board.PC1)
+    encoder_R = encoder_Roder_darvish_goodman.Encoder(4, pyb.Pin.board.PB6, pyb.Pin.board.PB7)
+    controller_R = controller_darvish_goodman.Controller(0.3, None, utime.ticks_ms())
     
     while True:
         if master_go.get():                
             if retreat.get():
-                moe.set_duty_cycle(+70)
-                joe.set_duty_cycle(-70)
+                motor_R.set_duty_cycle(+70)
+                motor_L.set_duty_cycle(-70)
+                
                 if not Line_L.get() and not Line_C.get() and not Line_R.get():
                     ready_left.put(0)
                     ready_right.put(0)
                     time_elapsed.put(time.time())
-
-
-                    left_pos.put(cosmo.read()-200)
-                    right_pos.put(enc.read()+200)
-                
+                    left_pos.put(encoder_L.read()-200)
+                    right_pos.put(encoder_R.read()+200)
                     retreat.put(0)
                     retreating.put(1)
-                    
+                
                 elif not Line_L.get() and Line_R.get():
                     ready_left.put(0)
                     ready_right.put(0)
                     time_elapsed.put(time.time())
-
-
-                    left_pos.put(cosmo.read()-450)
-                    right_pos.put(enc.read()-130)
-
-
+                    left_pos.put(encoder_L.read()-450)
+                    right_pos.put(encoder_R.read()-130)
                     retreat.put(0)
                     retreating.put(1)
-                    
+                
                 elif not Line_R.get() and Line_L.get():
                     ready_left.put(0)
                     ready_right.put(0)
                     time_elapsed.put(time.time())
-
-
-                    right_pos.put(enc.read()+450)
-                    left_pos.put(cosmo.read()+130)
-
-                    
+                    right_pos.put(encoder_R.read()+450)
+                    left_pos.put(encoder_L.read()+130)
                     retreat.put(0)
                     retreating.put(1)
+                
                 else:
                     ready_left.put(0)
                     ready_right.put(0)
                     time_elapsed.put(time.time())
-
-
-                    left_pos.put(cosmo.read()-200)
-                    right_pos.put(enc.read()+200)
-                
-                
+                    left_pos.put(encoder_L.read()-200)
+                    right_pos.put(encoder_R.read()+200)
                     retreat.put(0)
                     retreating.put(1)
+            
             elif attack.get() and not retreat.get():
                 ready_left.put(0)
                 ready_right.put(0)
                 time_elapsed.put(time.time())
-                
-                left_pos.put(cosmo.read()+125)
-                right_pos.put(enc.read()-125)        
-                    
-            ctrl1.set_point(left_pos.get())
-            ctrl.set_point(right_pos.get())
-        
-            posL = cosmo.read()
-            posR = enc.read()
+                left_pos.put(encoder_L.read()+125)
+                right_pos.put(encoder_R.read()-125)        
             
-            joe.set_duty_cycle(ctrl1.go(posL))
-            moe.set_duty_cycle(ctrl.go(posR))
-
+            controller_L.set_point(left_pos.get())
+            controller_R.set_point(right_pos.get())
+            posL = encoder_L.read()
+            posR = encoder_R.read()
+            motor_L.set_duty_cycle(controller_L.go(posL))
+            motor_R.set_duty_cycle(controller_R.go(posR))
 
             # if the wheel is in the desired position, then set the ready flags to true
-
             if -35 < left_pos.get()-posL < 35:
                 ready_left.put(1)
             if -35 < right_pos.get()-posR < 35:
                 ready_right.put(1)
 
-                
         else:
-            joe.set_duty_cycle(0)
-            moe.set_duty_cycle(0)
-
+            motor_L.set_duty_cycle(0)
+            motor_R.set_duty_cycle(0)
         yield (0)
-        
         
 def motion_control ():
     while True:
@@ -170,15 +144,15 @@ def motion_control ():
         
 def perception ():
     #initialize US sensor
-    bro = ultrasonic.UltraSonic("PA9", "PB10")
-    liner = linetracker.LineTracker(pyb.Pin.board.PB8, pyb.Pin.board.PB9, pyb.Pin.board.PB3)
+    us_sensor = ultrasonic.UltraSonic("PA9", "PB10")
+    line_sensor = linetracker.LineTracker(pyb.Pin.board.PB8, pyb.Pin.board.PB9, pyb.Pin.board.PB3)
 
     while True:
         if master_go.get():
-            enemy_position.put(bro.distance_cm())
-            Line_L.put(liner.read_L())
-            Line_C.put(liner.read_C())
-            Line_R.put(liner.read_R())
+            enemy_position.put(us_sensor.distance_cm())
+            Line_L.put(line_sensor.read_L())
+            Line_C.put(line_sensor.read_C())
+            Line_R.put(line_sensor.read_R())
             if retreating.get():
                 #Wait for retreat to finish.
                 yield(0)
@@ -197,7 +171,6 @@ def perception ():
                 scan.put(0)
                 retreat.put(1)
         yield(0)
-
 
 def ir_sensor_task ():        
     while True:
@@ -218,7 +191,7 @@ def ir_sensor_task ():
                 continue
             delta_t = delta_t[3:]
             bool_arr = []
-            #convert time differences into 1 and 0
+            #convert time difference into 1 and 0
 
             i = 1
             while i < 33:
@@ -232,19 +205,18 @@ def ir_sensor_task ():
             code = ""
             for item in bool_arr:
                 code = code + str(item)
-            #ADDR = code[24:32]
             
+            #ADDR = code[24:32]
             #if ADDR != "00000000":
                 #while not time_queue.empty():
                 #    time_queue.get()
             #    full_flag.put(False)
             #    continue
-            
             #nADDR = code[16:24]
-            CMD = code[8:16]
             #nCMD = code[0:8]
-            
-            
+           
+            CMD = code[8:16]
+
             if int(CMD, 2) == 22:
                 master_go.put(0)
             elif int(CMD, 2) == 12:
@@ -263,18 +235,11 @@ def ir_sensor_task ():
             #print("Command (DECIMAL): " + str(int(CMD, 2)))
         yield(0)
 
-
 # =============================================================================
 
 if __name__ == "__main__":
 
-
     print ('\033[2JTesting scheduler in cotask.py\n')
-
-    # Create a share and some queues to test diagnostic printouts
-    
-    
-    
     # set up interrupts and timer for ir sensor
     charmander = pyb.Pin (pyb.Pin.board.PA8, pyb.Pin.IN)
     pokemon = pyb.Timer(1, period = 0xFFFF, prescaler = 79)
@@ -302,10 +267,6 @@ if __name__ == "__main__":
     retreating = task_share.Share ('i', thread_protect = False, name = "retreat")
     retreating.put(0)
                                
-
-    
-
-    
     #setup motion control shares
     ready_left = task_share.Share ('i', thread_protect = False, name = "right_flag")
     ready_left.put(1)
@@ -337,8 +298,6 @@ if __name__ == "__main__":
     Line_R = task_share.Share ('i', thread_protect = False, name = "R")
     Line_R.put(1)
     
-    
-    
     #setup task share and tasks
     
     q0 = task_share.Queue ('B', 6, thread_protect = False, overwrite = False,
@@ -356,7 +315,6 @@ if __name__ == "__main__":
     task4 = cotask.Task (perception, name = 'perception', priority = 1,
                         period = 20, profile = True, trace = False)
 
-    
     cotask.task_list.append (task1)
     cotask.task_list.append (task2)
     cotask.task_list.append (task3)

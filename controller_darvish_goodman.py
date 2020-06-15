@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
+""" @file controller_darvish_goodman.py
+    This file contains the main program that creates a positional motor 
+    controller for the sumo-bot.
+
+    author: Darya Darvish
+
 """
-Spyder Editor
 
-This is a temporary script file.
-"""
-
-
-''' @file main.py
-There must be a docstring at the beginning of a Python
-source file with an @file [filename] tag in it! '''
 import utime
 
 class Controller:
@@ -55,16 +52,15 @@ class Controller:
         self.gain = setup_gain
         return 'Setting desired proportional gain to: ' + str(setup_gain)
     
-#    def print_stats (self):
- #       """ prints time and position data to be read through serial port"""
-  #      for i in range(len(self.time_list)):
-   #         print('{:},{:}\r'.format(self.time_list[i], self.pos_list[i]))
+#   def print_stats (self):
+#       """ prints time and position data to be read through serial port"""
+#       for i in range(len(self.time_list)):
+#           print('{:},{:}\r'.format(self.time_list[i], self.pos_list[i]))
             
     def reset_stats (self):
         """resets the lists holding position and time data"""
         self.time_list = []
         self.pos_list = []
-        
     
     def get_pos (self):
         return self.pos

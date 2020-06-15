@@ -1,19 +1,18 @@
-# -*- coding: utf-8 -*-
+""" @file motor_darvish_goodman.py
+    This file contains the main program that creates a motor 
+    driver for the sumo-bot.
+
+    author: Darya Darvish
+
 """
-Spyder Editor
 
-This is a temporary script file.
-""" 
 
-''' @file main.py
-There must be a docstring at the beginning of a Python
-source file with an @file [filename] tag in it! '''
 
 import pyb
 
 class MotorDriver:
-    ''' This class implements a motor driver for the
-    ME405 board. '''
+    """This class implements a motor driver for the
+    ME405 board."""
     def __init__ (self, timer_channel, pin_1, pin_2, enable_pin):
         ''' Creates a motor driver by initializing GPIO
         pins and turning the motor off for safety. '''
