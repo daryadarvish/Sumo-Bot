@@ -241,10 +241,10 @@ if __name__ == "__main__":
 
     print ('\033[2JTesting scheduler in cotask.py\n')
     # set up interrupts and timer for ir sensor
-    charmander = pyb.Pin (pyb.Pin.board.PA8, pyb.Pin.IN)
-    pokemon = pyb.Timer(1, period = 0xFFFF, prescaler = 79)
-    channel_1 = pokemon.channel(1, mode = pyb.Timer.IC, polarity = pyb.Timer.BOTH, 
-                              pin=charmander)
+    timer_pin = pyb.Pin (pyb.Pin.board.PA8, pyb.Pin.IN)
+    timer_1 = pyb.Timer(1, period = 0xFFFF, prescaler = 79)
+    channel_1 = timer_1.channel(1, mode = pyb.Timer.IC, polarity = pyb.Timer.BOTH, 
+                              pin=timer_pin)
     channel_1.callback(interrupt)
     ir_time_queue = Queue("I", 68)
     ir_full_flag = Share("i")
