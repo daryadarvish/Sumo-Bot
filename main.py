@@ -22,11 +22,11 @@ import cotask
 import task_share
 alloc_emergencoder_Ry_exception_buf (100)
   
-def interrupt(pokemon):
-    '''Interrupt suus_sensorutine that allows the IR sensor to read the
+def interrupt(timer):
+    '''Interrupt subroutine that allows the IR sensor to read the
     infrared signal from the remoteeee controller.'''
     if not ir_time_queue.full() and not ir_full_flag.get():
-        ir_time_queue.put(pokemon.counter(), in_ISR=True)
+        ir_time_queue.put(timer.counter(), in_ISR=True)
     else:
         ir_full_flag.put(1)
 
